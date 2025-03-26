@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dish Dash - Digital Dine In</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .menu-section {
+            margin: 20px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .dish-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 10px;
+            white-space: nowrap;
+        }
+        .dish {
+            display: inline-block;
+            background: #fff;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            min-width: 150px;
+        }
+        .dish img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+        }
+        .counter {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .counter button {
+            padding: 5px;
+            border: none;
+            background: #28a745;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dish Dash - Digital Dine In</h1>
+    
+    <div class="menu-section">
+        <h2>Breakfast</h2>
+        <div class="dish-container" id="breakfast"></div>
+    </div>
+    
+    <div class="menu-section">
+        <h2>Lunch</h2>
+        <div class="dish-container" id="lunch"></div>
+    </div>
+    
+    <div class="menu-section">
+        <h2>Dinner</h2>
+        <div class="dish-container" id="dinner"></div>
+    </div>
+    
+    <div class="menu-section">
+        <h2>Total Price: <span id="totalPrice">0</span> INR</h2>
+    </div>
+    
+    <script>
+        const menu = {
+            breakfast: [
+                { name: "Idli", price: 30, image: "idli.jpg" },
+                { name: "Dosa", price: 50, image: "dosa.jpg" },
+                { name: "Pongal", price: 40, image: "pongal.jpg" }
+            ],
+            lunch: [
+                { name: "Meals", price: 120, image: "meals.jpg" },
+                { name: "Biriyani", price: 150, image: "biriyani.jpg" },
+                { name: "Curd Rice", price: 50, image: "curd_rice.jpg" }
+            ],
+            dinner: [
+                { name: "Parotta", price: 60, image: "parotta.jpg" },
+                { name: "Chapati", price: 40, image: "chapati.jpg" },
+                { name: "Idiyappam", price: 50, image: "idiyappam.jpg" }
+            ]
+        };
+        
+        let totalAmount = 0;
+        
+        function renderMenu(section, containerId) {
+            const container = document.getElementById(containerId);
+            menu[section].forEach(dish => {
+                const dishDiv = document.createElement("div");
+                dishDiv.className = "dish";
+                dishDiv.innerHTML = `
+                    <img src="${dish.image}" alt="${dish.name}">
+                    <p>${dish.name} - ₹${dish.price}</p>
+                    <div class="counter">
+                        <button onclick="updateQuantity('${section}', '${dish.name}', -1, ${dish.price})">-</button>
+                        <span id="${dish.name.replace(/\s+/g, '')}">0</span>
+                        <button onclick="updateQuantity('${section}', '${dish.name}', 1, ${dish.price})">+</button>
+                    </div>
+                `;
+                container.appendChild(dishDiv);
+            });
+        }
+        
+        function updateQuantity(section, dishName, change, price) {
+            const quantitySpan = document.getElementById(dishName.replace(/\s+/g, ''));
+            let quantity = parseInt(quantitySpan.innerText) + change;
+            if (quantity < 0) quantity = 0;
+            quantitySpan.innerText = quantity;
+            totalAmount += change * price;
+            if (totalAmount < 0) totalAmount = 0;
+            document.getElementById("totalPrice").innerText = totalAmount;
+        }
+        
+        renderMenu("breakfast", "breakfast");
+        renderMenu("lunch", "lunch");
+        renderMenu("dinner", "dinner");
+    </script>
+</body>
+</html>

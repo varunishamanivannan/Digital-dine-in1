@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Ordering System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5dc;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .category {
+            margin-bottom: 30px;
+        }
+        .dish-container {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px;
+            gap: 20px;
+        }
+        .dish {
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            min-width: 200px;
+        }
+        .dish img {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+        }
+        .quantity-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn {
+            padding: 5px 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #cart {
+            margin-top: 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>Digital Dining - Dish Dash</h1>
+    
+    <div class="category">
+        <h2>Breakfast</h2>
+        <div class="dish-container" id="breakfast"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Lunch</h2>
+        <div class="dish-container" id="lunch"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Dinner</h2>
+        <div class="dish-container" id="dinner"></div>
+    </div>
+    
+    <div id="cart">
+        <h2>Shopping Cart</h2>
+        <div id="cart-items"></div>
+        <h3>Total: <span id="totalAmount">0</span> INR</h3>
+    </div>
+    
+    <script>
+        const menu = {
+            breakfast: [
+                { name: "Idli", price: 50, img: "idli.jpg" },
+                { name: "Dosa", price: 60, img: "dosa.jpg" },
+                { name: "Poha", price: 40, img: "poha.jpg" }
+            ],
+            lunch: [
+                { name: "Veg Thali", price: 150, img: "veg-thali.jpg" },
+                { name: "Paneer Curry", price: 120, img: "paneer.jpg" },
+                { name: "Dal Tadka", price: 100, img: "dal.jpg" }
+            ],
+            dinner: [
+                { name: "Biryani", price: 200, img: "biryani.jpg" },
+                { name: "Butter Chicken", price: 250, img: "butter-chicken.jpg" },
+                { name: "Tandoori Roti", price: 20, img: "roti.jpg" }
+            ]
+        };
+
+        let cart = {};
+
+        function loadMenu() {
+            for (const category in menu) {
+                const container = document.getElementById(category);
+                menu[category].forEach((dish, index) => {
+                    container.innerHTML += `
+                        <div class="dish">
+                            <img src="${dish.img}" alt="${dish.name}">
+                            <h3>${dish.name}</h3>
+                            <p>${dish.price} INR</p>
+                            <div class="quantity-controls">
+                                <button class="btn" onclick="updateCart('${dish.name}', ${dish.price}, -1)">-</button>
+                                <span id="qty-${dish.name}">0</span>
+                                <button class="btn" onclick="updateCart('${dish.name}', ${dish.price}, 1)">+</button>
+                            </div>
+                        </div>`;
+                });
+            }
+        }
+
+        function updateCart(dish, price, change) {
+            if (!cart[dish]) cart[dish] = { quantity: 0, price };
+            cart[dish].quantity += change;
+            if (cart[dish].quantity <= 0) delete cart[dish];
+            renderCart();
+        }
+
+        function renderCart() {
+            let total = 0;
+            let cartContent = "";
+            for (const item in cart) {
+                const { quantity, price } = cart[item];
+                cartContent += `<p>${quantity} x ${item} = ${quantity * price} INR</p>`;
+                total += quantity * price;
+                document.getElementById(`qty-${item}`).innerText = quantity;
+            }
+            document.getElementById("cart-items").innerHTML = cartContent;
+            document.getElementById("totalAmount").innerText = total;
+        }
+
+        document.addEventListener("DOMContentLoaded", loadMenu);
+    </script>
+</body>
+</html>

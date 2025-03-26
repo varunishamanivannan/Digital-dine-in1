@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customize Your Dish</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5dc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .options {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 10px;
+        }
+        .options label {
+            white-space: nowrap;
+            background: #eee;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn {
+            padding: 10px;
+            margin-top: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Customize Your Dish</h2>
+        
+        <h3>Select Variety of Rice:</h3>
+        <div id="riceOptions" class="options"></div>
+        
+        <h3>Select Ingredients:</h3>
+        <div id="ingredientsOptions" class="options"></div>
+        
+        <div id="vegetablesList" class="options hidden">
+            <h3>Select Vegetables:</h3>
+            <div id="vegetableOptions" class="options"></div>
+        </div>
+        
+        <h3>Select Flavors:</h3>
+        <div id="flavorsOptions" class="options"></div>
+        
+        <h3>Select Spices:</h3>
+        <div id="spicesOptions" class="options"></div>
+        
+        <button class="btn" onclick="submitOrder()">Submit Order</button>
+        <h3>Order Summary:</h3>
+        <div id="orderSummary"></div>
+    </div>
+    
+    <script>
+        const riceVarieties = ["Basmati Rice", "Jeera Rice", "Brown Rice", "Steamed Rice", "Fried Rice"];
+        const ingredients = ["Vegetables", "Paneer", "Mushrooms", "Chicken", "Eggs"];
+        const vegetables = ["Carrot", "Beans", "Peas", "Cabbage", "Capsicum"];
+        const flavors = ["Spicy", "Mild", "Tangy", "Sweet"];
+        const spices = ["Pepper", "Chili Powder", "Coriander", "Turmeric", "Garam Masala"];
+
+        function generateOptions(options, containerId) {
+            const container = document.getElementById(containerId);
+            options.forEach(option => {
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.value = option;
+                checkbox.id = option;
+                checkbox.addEventListener("change", handleIngredientSelection);
+
+                const label = document.createElement("label");
+                label.htmlFor = option;
+                label.textContent = option;
+
+                container.appendChild(checkbox);
+                container.appendChild(label);
+            });
+        }
+
+        function handleIngredientSelection() {
+            const vegetableCheckbox = document.querySelector("#ingredientsOptions input[value='Vegetables']");
+            const vegetableList = document.getElementById("vegetablesList");
+            if (vegetableCheckbox.checked) {
+                vegetableList.classList.remove("hidden");
+            } else {
+                vegetableList.classList.add("hidden");
+            }
+        }
+
+        generateOptions(riceVarieties, "riceOptions");
+        generateOptions(ingredients, "ingredientsOptions");
+        generateOptions(vegetables, "vegetableOptions");
+        generateOptions(flavors, "flavorsOptions");
+        generateOptions(spices, "spicesOptions");
+
+        function submitOrder() {
+            const selectedRice = getSelectedValues("riceOptions");
+            const selectedIngredients = getSelectedValues("ingredientsOptions");
+            const selectedVegetables = getSelectedValues("vegetableOptions");
+            const selectedFlavors = getSelectedValues("flavorsOptions");
+            const selectedSpices = getSelectedValues("spicesOptions");
+            
+            document.getElementById("orderSummary").innerHTML = `
+                <strong>Variety of Rice:</strong> ${selectedRice.join(", ")}<br>
+                <strong>Ingredients:</strong> ${selectedIngredients.join(", ")}<br>
+                ${selectedVegetables.length ? `<strong>Vegetables:</strong> ${selectedVegetables.join(", ")}` : ""}<br>
+                <strong>Flavors:</strong> ${selectedFlavors.join(", ")}<br>
+                <strong>Spices:</strong> ${selectedSpices.join(", ")}
+            `;
+        }
+
+        function getSelectedValues(containerId) {
+            return Array.from(document.querySelectorAll(`#${containerId} input:checked`)).map(input => input.value);
+        }
+    </script>
+</body>
+</html>

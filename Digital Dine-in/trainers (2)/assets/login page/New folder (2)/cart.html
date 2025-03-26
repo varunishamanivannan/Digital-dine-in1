@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Dining - Table Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5dc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+        }
+        .table, .event-box {
+            padding: 15px;
+            background: #e0f7fa;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .available { background-color: #b0f2b6; }
+        .occupied { background-color: #ff6961; }
+        .reserved { background-color: #ffcc5c; }
+        .btn {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .event-box:hover { background: #b2ebf2; }
+        .dropdown {
+            display: none;
+            background: #fff;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .dropdown p { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Table Management System</h1>
+        <div class="table-grid" id="tableGrid"></div>
+        <button class="btn" onclick="resetTables()">Reset All Tables</button>
+    </div>
+    
+    <div class="container">
+        <h2>Celebrate & Cherish</h2>
+        <div class="table-grid">
+            <div class="event-box" onclick="toggleDropdown('celebrateLive')">Celebrate & Live</div>
+            <div class="dropdown" id="celebrateLive">
+                <p onclick="showDishes('birthday')">🎂 Birthday Party</p>
+                <p onclick="showDishes('engagement')">💍 Engagement Ceremony</p>
+                <p onclick="showDishes('babyShower')">👶 Baby Shower</p>
+                <p onclick="showDishes('housewarming')">🏡 Housewarming</p>
+                <p onclick="showDishes('houseWedding')">💒 House Wedding</p>
+            </div>
+            <div id="eventDishes"></div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>Shopping Cart</h2>
+        <div id="cart"></div>
+        <h3>Total Amount: <span id="totalAmount">0</span> INR</h3>
+    </div>
+    
+    <script>
+        const tables = Array.from({ length: 4 }, (_, i) => ({ id: i + 1, status: "available" }));
+        let cart = [];
+        const prices = { Cake: 500, Pizza: 300, "Ice Cream": 150, Biryani: 400, "Grilled Chicken": 350, "Paneer Tikka": 250, Sweets: 200, Fruits: 180, Mocktails: 220, "South Indian Meals": 350, Pulao: 300, Lassi: 100, "Full Course Meal": 600, "Tandoori Platter": 450, Shakes: 200 };
+
+        function renderTables() {
+            const tableGrid = document.getElementById("tableGrid");
+            tableGrid.innerHTML = "";
+            tables.forEach(table => {
+                tableGrid.innerHTML += `
+                    <div class="table ${table.status}" onclick="changeStatus(${table.id})">
+                        <h3>Table ${table.id}</h3>
+                        <p>Status: ${table.status.charAt(0).toUpperCase() + table.status.slice(1)}</p>
+                    </div>`;
+            });
+        }
+
+        function changeStatus(tableId) {
+            const table = tables.find(t => t.id === tableId);
+            const statuses = ["available", "occupied", "reserved"];
+            table.status = statuses[(statuses.indexOf(table.status) + 1) % 3];
+            renderTables();
+        }
+
+        function resetTables() {
+            tables.forEach(table => table.status = "available");
+            renderTables();
+        }
+
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+
+        function showDishes(eventType) {
+            const dishes = {
+                birthday: ["Cake", "Pizza", "Ice Cream"],
+                engagement: ["Biryani", "Grilled Chicken", "Paneer Tikka"],
+                babyShower: ["Sweets", "Fruits", "Mocktails"],
+                housewarming: ["South Indian Meals", "Pulao", "Lassi"],
+                houseWedding: ["Full Course Meal", "Tandoori Platter", "Shakes"]
+            };
+            let content = `<h3>${eventType} Dishes</h3>`;
+            dishes[eventType].forEach(dish => {
+                content += `<p>${dish} - ${prices[dish]} INR <button onclick="orderDish('${dish}', ${prices[dish]})">Order Now</button></p>`;
+            });
+            document.getElementById("eventDishes").innerHTML = content;
+        }
+
+        function orderDish(dish, price) {
+            let quantity = prompt(`Enter quantity for ${dish}:`);
+            if (quantity && !isNaN(quantity) && quantity > 0) {
+                cart.push({ dish, quantity, price: price * quantity });
+                updateCart();
+            }
+        }
+
+        function updateCart() {
+            let total = 0;
+            let cartContent = "<h3>Cart Items</h3>";
+            cart.forEach(item => {
+                cartContent += `<p>${item.quantity} x ${item.dish} = ${item.price} INR</p>`;
+                total += item.price;
+            });
+            document.getElementById("cart").innerHTML = cartContent;
+            document.getElementById("totalAmount").innerText = total;
+        }
+
+        document.addEventListener("DOMContentLoaded", renderTables);
+    </script>
+</body>
+</html>
